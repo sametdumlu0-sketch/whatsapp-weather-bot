@@ -36,7 +36,7 @@ logging.basicConfig(
         logging.StreamHandler(),
     ],
 )
-log = logging.getLogger(_name_)
+log = logging.getLogger(__name__)
 
 
 def get_weather_emoji(description: str) -> str:
@@ -150,7 +150,7 @@ def run_bot():
     send_whatsapp_message(message)
 
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     log.info("Bot başlatılıyor...")
     run_bot()  # İlk çalıştırmada hemen mesaj gönder
 

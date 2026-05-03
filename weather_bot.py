@@ -148,7 +148,7 @@ def run_bot():
     send_to_whatsapp(message)
 
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     log.info("Bot başlatılıyor...")
     run_bot()  # İlk çalıştırmada hemen bir mesaj gönder
 

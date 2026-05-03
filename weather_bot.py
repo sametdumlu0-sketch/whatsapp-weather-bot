@@ -4,13 +4,12 @@ from datetime import datetime
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 # ─────────────────────────────────────────
-#  AYARLAR — sadece bu bölümü düzenle
+#  AYARLAR
 # ─────────────────────────────────────────
-OPENWEATHER_API_KEY = "8fc0ab919ecad21ff1e59832ec6743f7"   # OpenWeatherMap key buraya
+OPENWEATHER_API_KEY = "8fc0ab919ecad21ff1e59832ec6743f7"  # OpenWeatherMap key
 
-WAHA_URL = "http://localhost:3000"     # WAHA sunucu adresi
-WAHA_SESSION = "default"              # WAHA oturum adı
-WHATSAPP_CHANNEL_ID = "KANAL_ID"      # WhatsApp kanal ID'si buraya
+CALLMEBOT_PHONE = "905513456995"   # Telefon numarası
+CALLMEBOT_APIKEY = "6485799"       # CallMeBot API key
 
 CITIES = [
     "Istanbul,TR",
@@ -60,17 +59,17 @@ def get_weather_emoji(description: str) -> str:
 def get_advice(description: str, temp: float) -> str:
     desc = description.lower()
     if any(w in desc for w in ["rain", "drizzle", "yağmur"]):
-        return "☂️ Şemsiyenizi yanınıza almayı unutmayın!"
+        return "Şemsiyenizi yanınıza almayı unutmayın!"
     elif any(w in desc for w in ["thunder", "storm"]):
-        return "⚡ Fırtınalı hava! Mümkünse dışarı çıkmayın."
+        return "Fırtınalı hava! Mümkünse dışarı çıkmayın."
     elif any(w in desc for w in ["snow", "kar"]):
-        return "🧣 Kalın giyin, yollar kaygan olabilir."
+        return "Kalın giyin, yollar kaygan olabilir."
     elif temp >= 30:
-        return "🌞 Çok sıcak! Bol su için ve güneş kremi kullanın."
+        return "Çok sıcak! Bol su için ve güneş kremi kullanın."
     elif temp <= 5:
-        return "🧥 Hava çok soğuk, sıcak giyinin!"
+        return "Hava çok soğuk, sıcak giyinin!"
     else:
-        return "😊 Hava güzel, keyifli bir gün geçirin!"
+        return "Keyifli bir gün geçirin!"
 
 
 def fetch_weather(city_code: str) -> dict | None:
@@ -96,38 +95,41 @@ def fetch_weather(city_code: str) -> dict | None:
         return None
 
 
-def format_message(weather_list: list[dict]) -> str:
+def format_message(weather_list: list) -> str:
     now = datetime.now().strftime("%H:%M")
-    lines = [f"🗓️ Hava Durumu Raporu — {now}\n"]
+    lines = [f"Hava Durumu Raporu - {now}"]
+    lines.append("─────────────────")
     for w in weather_list:
         emoji = get_weather_emoji(w["description"])
         advice = get_advice(w["description"], w["temp"])
         lines.append(
             f"{emoji} {w['city']}\n"
-            f"🌡️ Sıcaklık: {w['temp']}°C\n"
-            f"💧 Nem: %{w['humidity']}\n"
-            f"📋 Durum: {w['description']}\n"
-            f"💡 {advice}\n"
+            f"Sicaklik: {w['temp']}C\n"
+            f"Nem: %{w['humidity']}\n"
+            f"Durum: {w['description']}\n"
+            f"Tavsiye: {advice}"
         )
-    lines.append("─────────────────")
-    lines.append("Veriler OpenWeatherMap tarafından sağlanmaktadır.")
+        lines.append("─────────────────")
     return "\n".join(lines)
 
 
-def send_to_whatsapp(message: str) -> bool:
-    url = f"{WAHA_URL}/api/sendText"
-    payload = {
-        "session": WAHA_SESSION,
-        "chatId": WHATSAPP_CHANNEL_ID,
+def send_whatsapp_message(message: str) -> bool:
+    url = "https://api.callmebot.com/whatsapp.php"
+    params = {
+        "phone": CALLMEBOT_PHONE,
         "text": message,
+        "apikey": CALLMEBOT_APIKEY,
     }
     try:
-        response = requests.post(url, json=payload, timeout=10)
-        response.raise_for_status()
-        log.info("Mesaj başarıyla WhatsApp kanalına gönderildi.")
-        return True
+        response = requests.get(url, params=params, timeout=15)
+        if response.status_code == 200:
+            log.info("Mesaj başarıyla gönderildi.")
+            return True
+        else:
+            log.error(f"Mesaj gönderilemedi: {response.status_code} - {response.text}")
+            return False
     except requests.exceptions.RequestException as e:
-        log.error(f"WhatsApp mesajı gönderilemedi: {e}")
+        log.error(f"Bağlantı hatası: {e}")
         return False
 
 
@@ -140,21 +142,21 @@ def run_bot():
             weather_data.append(data)
 
     if not weather_data:
-        log.warning("Hiçbir şehir için veri alınamadı, mesaj gönderilmedi.")
+        log.warning("Hiçbir şehir için veri alınamadı.")
         return
 
     message = format_message(weather_data)
-    log.info(f"Oluşturulan mesaj:\n{message}")
-    send_to_whatsapp(message)
+    log.info(f"Mesaj gönderiliyor...\n{message}")
+    send_whatsapp_message(message)
 
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     log.info("Bot başlatılıyor...")
-    run_bot()  # İlk çalıştırmada hemen bir mesaj gönder
+    run_bot()  # İlk çalıştırmada hemen mesaj gönder
 
     scheduler = BlockingScheduler(timezone="Europe/Istanbul")
-    scheduler.add_job(run_bot, "cron", minute=0)  # Her saat başı
-    log.info("Zamanlayıcı aktif — her saat başı çalışacak.")
+    scheduler.add_job(run_bot, "cron", minute=0)
+    log.info("Zamanlayıcı aktif - her saat başı çalışacak.")
     try:
         scheduler.start()
     except (KeyboardInterrupt, SystemExit):

@@ -17,6 +17,10 @@ CITIES = [
     "Izmir,TR",
     "Antalya,TR",
     "Konya,TR",
+    "Bursa,TR",
+    "Erzurum,TR",
+    "Mersin,TR",
+    "Eskisehir,TR",
 ]
 
 CITY_NAMES_TR = {

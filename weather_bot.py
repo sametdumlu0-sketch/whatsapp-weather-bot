@@ -15,7 +15,7 @@ CALLMEBOT_APIKEY = "6485799"       # CallMeBot API key
 WAHA_URL            = "https://waha-production-3ad4e.up.railway.app"
 WAHA_SESSION        = "default"
 WAHA_API_KEY        = "admin123"
-WHATSAPP_CHANNEL_ID = "0029Vb7lxp6CnA7pyfoVna3h@newsletter"
+WHATSAPP_CHANNEL_ID = "0029Vb7lxp6CnA7pyfoVna3h@lid"
 
 CITIES = [
     "Istanbul,TR",

@@ -24,9 +24,7 @@ CITIES = [
     "Antalya,TR",
     "Konya,TR",
     "Bursa,TR",
-    "Erzurum,TR",
-    "Mersin,TR",
-    "Eskisehir,TR",
+    
 ]
 
 CITY_NAMES_TR = {
@@ -36,9 +34,7 @@ CITY_NAMES_TR = {
     "Antalya,TR":    "Antalya",
     "Konya,TR":      "Konya",
     "Bursa,TR":      "Bursa",
-    "Erzurum,TR":    "Erzurum",
-    "Mersin,TR":     "Mersin",
-    "Eskisehir,TR":  "Eskişehir",
+    
 }
 # ─────────────────────────────────────────
 

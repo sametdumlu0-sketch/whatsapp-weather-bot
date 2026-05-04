@@ -10,6 +10,9 @@ OPENWEATHER_API_KEY = "8fc0ab919ecad21ff1e59832ec6743f7"  # OpenWeatherMap key
 
 CALLMEBOT_PHONE = "905513456995"   # Telefon numarası
 CALLMEBOT_APIKEY = "6485799"       # CallMeBot API key
+WAHA_URL = "https://waha-production-3ad4e.up.railway.app"
+WAHA_SESSION = "default"
+WHATSAPP_CHANNEL_ID = "0029Vb7lxp6CnA7pyfoVna3h@newsletter"
 
 CITIES = [
     "Istanbul,TR",
@@ -157,6 +160,27 @@ def run_bot():
     message = format_message(weather_data)
     log.info(f"Mesaj gönderiliyor...\n{message}")
     send_whatsapp_message(message)
+    send_to_channel(message)
+    
+    def send_to_channel(message: str) -> bool:
+    url = f"{WAHA_URL}/api/sendText"
+    headers = {"X-Api-Key": "admin123"}
+    payload = {
+        "session": WAHA_SESSION,
+        "chatId": WHATSAPP_CHANNEL_ID,
+        "text": message,
+    }
+    try:
+        response = requests.post(url, json=payload, headers=headers, timeout=15)
+        if response.status_code == 201:
+            log.info("Kanal mesajı başarıyla gönderildi.")
+            return True
+        else:
+            log.error(f"Kanal mesajı gönderilemedi: {response.status_code} - {response.text}")
+            return False
+    except requests.exceptions.RequestException as e:
+        log.error(f"Kanal bağlantı hatası: {e}")
+        return False
 
 
 if __name__ == "__main__":

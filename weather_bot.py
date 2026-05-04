@@ -29,6 +29,10 @@ CITY_NAMES_TR = {
     "Izmir,TR": "İzmir",
     "Antalya,TR": "Antalya",
     "Konya,TR": "Konya",
+    "Bursa,TR":"Bursa",
+    "Erzurum,TR":"Erzurum",
+    "Mersin,TR":"Mersin",
+    "Eskisehir,TR":"Eskişehir",
 }
 # ─────────────────────────────────────────
 

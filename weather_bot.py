@@ -1,6 +1,6 @@
 import requests
 import logging
-from datetime import datetime
+from datetime import datetime import pytz
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 # ─────────────────────────────────────────
@@ -104,7 +104,8 @@ def fetch_weather(city_code: str) -> dict | None:
 
 
 def format_message(weather_list: list) -> str:
-    now = datetime.now().strftime("%H:%M")
+   tz = pytz.timezone("Europe/Istanbul")
+now = datetime.now(tz).strftime("%H:%M")
     lines = [f"Hava Durumu Raporu - {now}"]
     lines.append("─────────────────")
     for w in weather_list:
